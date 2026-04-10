@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>RenewX</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #e9f2e6 0%, #c8e0c4 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 16px;
+        }
+        .glass-card {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(2px);
+            border-radius: 48px;
+            box-shadow: 0 25px 45px -12px rgba(0, 32, 0, 0.35), 0 2px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .hero {
+            background: #1b3b2b;
+            padding: 32px 28px 24px 28px;
+            color: white;
+            text-align: center;
+        }
+        .hero h1 {
+            margin: 0 0 8px 0;
+            font-size: 2.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .hero h1 span {
+            background: #f5b042;
+            font-size: 1.2rem;
+            padding: 4px 12px;
+            border-radius: 40px;
+            color: #1e3a2f;
+        }
+        .hero p {
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+        .content {
+            padding: 32px 28px 38px;
+        }
+        .input-group {
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+        .input-field {
+            flex: 1;
+            min-width: 180px;
+        }
+        .input-field label {
+            font-weight: 600;
+            color: #1f3b2c;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-field input, .input-field select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 32px;
+            border: 1.5px solid #d0dfcc;
+            background: #fefef7;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: 0.2s;
+            outline: none;
+        }
+        .input-field input:focus, .input-field select:focus {
+            border-color: #2c7a4b;
+            box-shadow: 0 0 0 3px rgba(44, 122, 75, 0.2);
+        }
+        .radio-switch {
+            background: #f1f6ef;
+            padding: 8px 12px;
+            border-radius: 60px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .radio-switch label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #1e3a2f;
+            cursor: pointer;
+            background: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            transition: 0.15s;
+            border: 1px solid #cfe2ca;
+        }
+        .radio-switch input {
+            width: 18px;
+            height: 18px;
+            accent-color: #2c7a4b;
+        }
+        .radio-switch label:has(input:checked) {
+            background: #2c7a4b;
+            color: white;
+            border-color: #2c7a4b;
+        }
+        .help-text {
+            font-size: 0.75rem;
+            color: #4c6b55;
+            margin-top: 6px;
+            margin-left: 12px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .slider-container input {
+            flex: 2;
+            min-width: 150px;
+        }
+        .slider-value {
+            background: #e9f2e6;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #1f6e43;
+            min-width: 100px;
+            text-align: center;
+        }
+        .daynight-badge {
+            background: #d9e8d2;
+            border-radius: 28px;
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .recommend-btn {
+            background: #1b3b2b;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            margin: 28px 0 24px 0;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 0 #0e2a1d;
+            transform: translateY(-2px);
+        }
+        .recommend-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0e2a1d;
+        }
+        .result-panel {
+            background: #f5faf2;
+            border-radius: 36px;
+            padding: 18px 24px 24px;
+            margin-top: 16px;
+            border: 1px solid #cde2c6;
+            transition: all 0.2s ease;
+        }
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px dashed #bfdbb6;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+        .result-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #173e2a;
+        }
+        .rec-card {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 16px 0;
+        }
+        .rec-item {
+            flex: 1;
+            background: white;
+            border-radius: 28px;
+            padding: 16px 20px;
+            text-align: center;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.03);
+            border: 1px solid #ddecd6;
+        }
+        .rec-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f6e43;
+            line-height: 1;
+            margin: 10px 0 5px;
+        }
+        .rec-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: #5a7c64;
+        }
+        .badge {
+            background: #e9f2e6;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .footnote {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 24px;
+            color: #547a62;
+            border-top: 1px solid #d9e8d2;
+            padding-top: 16px;
+        }
+        hr {
+            margin: 8px 0;
+            border-color: #cfe2ca;
+        }
+        .eco-highlight {
+            background: #d4ecd0;
+            border-radius: 24px;
+            padding: 12px 18px;
+            margin: 16px 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .tree-icon {
+            font-size: 1.8rem;
+        }
+        .insight-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            background: #ffffffcc;
+            border-radius: 24px;
+            padding: 12px 16px;
+            margin: 12px 0;
+        }
+        .warning-note {
+            background: #fff3e0;
+            border-left: 4px solid #f5b042;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin: 10px 0;
+        }
+        .placeholder-message {
+            text-align: center;
+            padding: 32px 20px;
+            color: #4f6e5e;
+            background: #ffffffcc;
+            border-radius: 28px;
+            font-weight: 500;
+        }
+        @media (max-width: 600px) {
+            .content { padding: 24px 18px; }
+            .rec-value { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="glass-card">
+    <div class="hero">
+        <h1>
+            RenewX
+        </h1>
+        <p>PV Energy Estimation</p>
+    </div>
+    <div class="content">
+        <!-- Bill or kWh input -->
+        <div class="input-group">
+            <div class="input-field" style="flex:1.2">
+                <label>⚡ MONTHLY BILL (₱)  OR  📊 MONTHLY kWh</label>
+                <input type="number" id="energyInput" placeholder="e.g., 4800 or 850" step="any" value="4800">
+                <div class="help-text">Enter electricity bill OR actual monthly consumption</div>
+            </div>
+            <div class="input-field">
+                <label>🔘 INPUT MODE</label>
+                <select id="inputMode">
+                    <option value="bill">💰 Bill amount (₱)</option>
+                    <option value="kwh">🔋 Monthly Consumption (kWh)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- DAY & NIGHT USAGE SLIDER -->
+        <div class="input-field">
+            <label>🌞 DAYTIME USAGE % (rest is night consumption)</label>
+            <div class="slider-container">
+                <input type="range" id="dayPercentSlider" min="0" max="100" step="5" value="55">
+                <span class="slider-value" id="dayPercentDisplay">55% Day / 45% Night</span>
+            </div>
+            <div class="help-text">How much of your total consumption happens during sunlight hours? Affects battery sizing for nighttime backup.</div>
+        </div>
+
+        <!-- System Architecture -->
+        <div class="input-field">
+            <label>🔌 SYSTEM ARCHITECTURE</label>
+            <div class="radio-switch" id="systemTypeGroup">
+                <label><input type="radio" name="systemType" value="gridtie" checked> ⚡ Grid-Tie</label>
+                <label><input type="radio" name="systemType" value="hybrid"> 🔄 Hybrid</label>
+                <label><input type="radio" name="systemType" value="offgrid"> 🌲 Off-Grid</label>
+            </div>
+            <div class="help-text" id="systemTypeHelp">Grid-tie: no battery needed (battery automatically set to 0 kWh). Hybrid/Off-grid enables battery storage.</div>
+        </div>
+
+        <!-- Backup Hours Slider -->
+        <div class="input-field">
+            <label>⏱️ DESIRED BACKUP HOURS (battery autonomy)</label>
+            <div class="slider-container">
+                <input type="range" id="backupHours" min="0" max="24" step="0.5" value="8">
+                <span class="slider-value" id="backupHoursDisplay">8.0 hours</span>
+            </div>
+            <div class="help-text" id="backupHelpText">Hours of backup power during outages. For Grid-Tie, battery is 0 kWh regardless of backup setting.</div>
+        </div>
+
+        <!-- Peak Sun Hours -->
+        <div class="input-field">
+            <label>🌞 PEAK SUN HOURS (daily avg)</label>
+            <input type="number" id="sunHours" value="4.5" step="0.1" min="2.5" max="6.5">
+        </div>
+
+        <!-- System Loss Factor -->
+        <div class="input-field">
+            <label>⚙️ SYSTEM LOSS FACTOR</label>
+            <select id="lossFactorSelect">
+                <option value="1.18">Standard (18% losses)</option>
+                <option value="1.25" selected>Conservative (25% losses)</option>
+                <option value="1.12">Premium (12% losses)</option>
+            </select>
+        </div>
+
+        <button class="recommend-btn" id="calcBtn">✨ GENERATE</button>
+
+        <div id="resultContainer" class="result-panel">
+            <div class="result-header">
+                <h3>📋 System Recommendation</h3>
+            </div>
+            <div id="recommendationDynamic">
+                <div class="placeholder-message">
+                    ⚙️ Adjust your parameters above and click <strong>"GENERATE"</strong> to see solar & battery sizing, carbon savings, and night-aware results.
+                </div>
+            </div>
+            <div class="footnote">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM elements
+        const energyInput = document.getElementById('energyInput');
+        const inputModeSelect = document.getElementById('inputMode');
+        const sunHoursInput = document.getElementById('sunHours');
+        const backupHoursSlider = document.getElementById('backupHours');
+        const backupHoursDisplay = document.getElementById('backupHoursDisplay');
+        const dayPercentSlider = document.getElementById('dayPercentSlider');
+        const dayPercentDisplay = document.getElementById('dayPercentDisplay');
+        const lossFactorSelect = document.getElementById('lossFactorSelect');
+        const calcBtn = document.getElementById('calcBtn');
+        const resultDynamicDiv = document.getElementById('recommendationDynamic');
+        const systemTypeHelp = document.getElementById('systemTypeHelp');
+        const backupHelpText = document.getElementById('backupHelpText');
+        
+        const PHP_RATE_PER_KWH = 12.00;   // ₱/kWh
+        
+        // Update displays only visually (no auto-render)
+        backupHoursSlider.addEventListener('input', function() {
+            backupHoursDisplay.textContent = parseFloat(this.value).toFixed(1) + ' hours';
+        });
+        
+        dayPercentSlider.addEventListener('input', function() {
+            const val = parseInt(this.value);
+            dayPercentDisplay.textContent = `${val}% Day / ${100-val}% Night`;
+        });
+        
+        function getSelectedSystemType() {
+            const radios = document.getElementsByName('systemType');
+            for(let r of radios) if(r.checked) return r.value;
+            return 'gridtie';
+        }
+        
+        // Update UI hints when system type changes (visual only)
+        function updateSystemTypeHints() {
+            const sysType = getSelectedSystemType();
+            if(sysType === 'gridtie') {
+                systemTypeHelp.innerHTML = '🔹 Grid-Tie: Battery storage forced to 0 kWh (no battery needed). Backup hours setting is ignored for battery sizing.';
+                backupHelpText.innerHTML = '⏱️ Backup hours setting does NOT add battery for Grid-Tie systems. Battery remains 0 kWh. For battery storage, select Hybrid or Off-Grid.';
+                backupHoursSlider.style.opacity = '0.7';
+            } else {
+                systemTypeHelp.innerHTML = '🔹 Hybrid/Off-Grid: Battery storage is enabled and sized based on night usage and backup hours.';
+                backupHelpText.innerHTML = 'Hours of backup power during outages. Combined with night consumption to determine battery capacity.';
+                backupHoursSlider.style.opacity = '1';
+            }
+        }
+        
+        function getDesiredBackupHours() {
+            return parseFloat(backupHoursSlider.value);
+        }
+        
+        function getDayPercent() {
+            return parseInt(dayPercentSlider.value);
+        }
+        
+        function getLossMultiplier() {
+            return parseFloat(lossFactorSelect.value);
+        }
+        
+        function getMonthlyKwhFromInput() {
+            let raw = parseFloat(energyInput.value);
+            if(isNaN(raw) || raw <= 0) return 0;
+            if(inputModeSelect.value === 'kwh') return raw;
+            let monthlyKwh = raw / PHP_RATE_PER_KWH;
+            if(monthlyKwh < 0) monthlyKwh = 0;
+            return monthlyKwh;
+        }
+        
+        // Core computation engine
+        function computeRecommendation(monthlyKwh, systemType, sunHours, desiredBackupHours, lossMultiplier, dayPercent) {
+            if(monthlyKwh <= 0) monthlyKwh = 0.1;
+            const dailyKwhTotal = monthlyKwh / 30.4;
+            const dayRatio = dayPercent / 100;
+            const nightRatio = 1 - dayRatio;
+            
+            const daytimeLoadKwh = dailyKwhTotal * dayRatio;
+            const nighttimeLoadKwh = dailyKwhTotal * nightRatio;
+            const nightHours = 12;
+            const avgNightKw = nighttimeLoadKwh / nightHours;
+            
+            // SOLAR PV sizing base
+            let requiredPvKw = (dailyKwhTotal * lossMultiplier) / sunHours;
+            let solarKw = Math.max(0.6, Math.ceil(requiredPvKw * 2) / 2);
+            solarKw = Math.min(solarKw, 70);
+            
+            // BATTERY SIZING
+            let batteryKwh = 0;
+            const dodFactor = 0.8;
+            const inverterEff = 0.94;
+            
+            if(systemType === 'gridtie') {
+                batteryKwh = 0;
+            }
+            else if (systemType === 'hybrid') {
+                let nightEnergyNeeded = nighttimeLoadKwh;
+                let backupExtra = 0;
+                if(desiredBackupHours > 0) {
+                    const avgLoadKw = dailyKwhTotal / 24;
+                    backupExtra = avgLoadKw * desiredBackupHours;
+                }
+                let totalBatteryEnergy = (nightEnergyNeeded + backupExtra) / inverterEff;
+                let rawBattery = totalBatteryEnergy / dodFactor;
+                batteryKwh = Math.ceil(rawBattery * 2) / 2;
+                if(batteryKwh < 2.0 && (nightEnergyNeeded > 0 || desiredBackupHours > 0)) batteryKwh = 2.0;
+                if(desiredBackupHours === 0 && nightEnergyNeeded === 0) batteryKwh = 1.5;
+                batteryKwh = Math.min(batteryKwh, 140);
+            } 
+            else if (systemType === 'offgrid') {
+                let autonomySafety = 1.35;
+                let nightCover = nighttimeLoadKwh;
+                let extraBackup = (dailyKwhTotal / 24) * desiredBackupHours;
+                let totalRequired = (nightCover + extraBackup) * autonomySafety;
+                let usableReq = totalRequired / inverterEff;
+                let rawBattery = usableReq / dodFactor;
+                batteryKwh = Math.ceil(rawBattery * 2) / 2;
+                if(batteryKwh < 5) batteryKwh = 5;
+                batteryKwh = Math.min(batteryKwh, 180);
+                // Off-grid PV oversize
+                let offgridSolar = (dailyKwhTotal * 1.45) / sunHours;
+                solarKw = Math.max(solarKw, Math.ceil(offgridSolar * 2) / 2);
+                solarKw = Math.min(solarKw, 75);
+            }
+            
+            solarKw = Math.round(solarKw * 10) / 10;
+            batteryKwh = Math.round(batteryKwh * 10) / 10;
+            if(batteryKwh < 0) batteryKwh = 0;
+            
+            // Coverage & environmental
+            const annualGen = solarKw * sunHours * 365 * 0.85;
+            const annualConsumption = monthlyKwh * 12;
+            let coveragePercent = annualConsumption > 0 ? Math.min(98, Math.round((annualGen / annualConsumption) * 100)) : 0;
+            if(coveragePercent > 100) coveragePercent = 100;
+            if(annualGen === 0) coveragePercent = 0;
+            
+            const co2OffsetKg = Math.round(annualGen * 0.82);
+            const treesEquivalent = Math.round(co2OffsetKg / 22);
+            
+            return {
+                solarKw, batteryKwh, dailyKwhTotal, avgNightKw: avgNightKw,
+                nighttimeLoadKwh, dayPercent, coveragePercent,
+                monthlyKwh, sunHours, desiredBackupHours, systemType,
+                co2OffsetKg, treesEquivalent, annualGen, daytimeLoadKwh
+            };
+        }
+        
+        function formatPHP(amount) {
+            return '₱' + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        
+        function getSystemMessage(sysType, batteryKwh, desiredBackupHours, nightLoadKwh, avgNightKw) {
+            if(sysType === 'gridtie') {
+                return "⚡ Grid‑Tie system. Battery storage is set to 0 kWh (no battery required).";
+            } else if(sysType === 'hybrid') {
+                return `🔄 Hybrid system: ${batteryKwh} kWh battery sized to cover ${nightLoadKwh.toFixed(1)} kWh night consumption + ${desiredBackupHours}h backup autonomy. Seamless islanding during outages.`;
+            } else {
+                return `🌲 Off‑grid independence: ${batteryKwh} kWh battery ensures full night coverage (${nightLoadKwh.toFixed(1)} kWh nightly) plus ${desiredBackupHours}h extra reserve. Complete energy autonomy.`;
+            }
+        }
+        
+        // Main rendering function (only called on Generate button)
+        function renderRecommendation() {
+            let monthlyKwh = getMonthlyKwhFromInput();
+            if(monthlyKwh <= 0) {
+                resultDynamicDiv.innerHTML = `<div style="background:#fff1e0; border-radius:28px; padding:20px; text-align:center;">⚠️ Please enter a valid monthly bill (>0) or monthly kWh (>0) before generating.</div>`;
+                return;
+            }
+            
+            const systemType = getSelectedSystemType();
+            let sunHours = parseFloat(sunHoursInput.value);
+            if(isNaN(sunHours) || sunHours < 2) sunHours = 4.5;
+            sunHours = Math.min(Math.max(sunHours, 2.5), 6.8);
+            const desiredBackupHours = getDesiredBackupHours();
+            const lossMultiplier = getLossMultiplier();
+            const dayPercent = getDayPercent();
+            
+            const result = computeRecommendation(monthlyKwh, systemType, sunHours, desiredBackupHours, lossMultiplier, dayPercent);
+            const { solarKw, batteryKwh, dailyKwhTotal, nighttimeLoadKwh, avgNightKw, coveragePercent, co2OffsetKg, treesEquivalent, annualGen, daytimeLoadKwh } = result;
+            
+            const monthlyBill = monthlyKwh * PHP_RATE_PER_KWH;
+            const modeText = inputModeSelect.value === 'bill' ? `(₱${parseFloat(energyInput.value).toLocaleString()} → ${monthlyKwh.toFixed(0)} kWh)` : `(direct consumption)`;
+            
+            const systemPretty = { gridtie: 'Grid-Tie ⚡', hybrid: 'Hybrid 🔄', offgrid: 'Off-Grid 🌲' }[systemType];
+            
+            // Battery card with logic for grid-tie vs others
+            let batteryHtml = '';
+            if(systemType === 'gridtie') {
+                batteryHtml = `
+                    <div class="rec-item">
+                        <div class="rec-label">🔋 BATTERY STORAGE</div>
+                        <div class="rec-value">0 kWh</div>
+                        <div>Grid-Tie: No battery required<br>Pure grid-interactive</div>
+                    </div>
+                `;
+            } else if(batteryKwh === 0) {
+                batteryHtml = `<div class="rec-item"><div class="rec-label">🔋 BATTERY STORAGE</div><div class="rec-value">—</div><div>No storage configured</div></div>`;
+            } else {
+                let autonomyNote = (desiredBackupHours > 0) ? `${desiredBackupHours}h backup autonomy` : 'Night load shifting';
+                batteryHtml = `<div class="rec-item"><div class="rec-label">🔋 BATTERY STORAGE</div><div class="rec-value">${batteryKwh} kWh</div><div>${autonomyNote} | Night usage: ${nighttimeLoadKwh.toFixed(1)} kWh/night</div></div>`;
+            }
+            
+            const ecoTreeHtml = `
+                <div class="eco-highlight">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span class="tree-icon">🌳🌲</span>
+                        <div><strong>🌱 Carbon savings = ${co2OffsetKg.toLocaleString()} kg CO₂/year</strong><br>
+                        <span style="font-size:0.8rem;">Equivalent to planting <strong style="font-size:1.2rem;">${treesEquivalent}</strong> mature trees every year!</span></div>
+                    </div>
+                    <div class="badge">🌿 1 tree absorbs ~22kg CO₂/year</div>
+                </div>
+            `;
+            
+            const insightMetrics = `
+                <div class="insight-grid">
+                    <div>📅 Daily usage: ${dailyKwhTotal.toFixed(1)} kWh</div>
+                    <div>🌞 Day usage: ${dayPercent}% (${daytimeLoadKwh.toFixed(1)} kWh)</div>
+                    <div>🌙 Night usage: ${100-dayPercent}% (${nighttimeLoadKwh.toFixed(1)} kWh)</div>
+                    <div>⚡ Avg night load: ${avgNightKw.toFixed(2)} kW</div>
+                    <div>☀️ Sun hours: ${sunHours} h/day</div>
+                    <div>📈 Solar offset: ${coveragePercent}%</div>
+                </div>
+            `;
+            
+            const systemMsg = getSystemMessage(systemType, batteryKwh, desiredBackupHours, nighttimeLoadKwh, avgNightKw);
+            
+            let backupBadge = '';
+            if(systemType === 'gridtie') {
+                backupBadge = `<span class="badge" style="background:#ffe6cc;">⚡ Grid-Tie: Battery = 0 kWh (no backup storage)</span>`;
+            } else if(desiredBackupHours > 0) {
+                backupBadge = `<span class="badge">🔋 Backup target: ${desiredBackupHours} hours</span>`;
+            } else {
+                backupBadge = `<span class="badge">⚡ Backup not selected</span>`;
+            }
+            
+            const finalHtml = `
+                <div class="rec-card">
+                    <div class="rec-item">
+                        <div class="rec-label">☀️ SOLAR ARRAY</div>
+                        <div class="rec-value">${solarKw} kWp</div>
+                        <div>~${Math.round(annualGen)} kWh/year | ~${Math.round(solarKw*3.8)} m² area</div>
+                    </div>
+                    ${batteryHtml}
+                </div>
+                ${ecoTreeHtml}
+                ${insightMetrics}
+                <div style="background:#eef5ea; border-radius: 24px; padding: 14px 18px; margin: 12px 0;">
+                    <div style="font-weight:700; margin-bottom:8px;">💡 ${systemPretty} configuration</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                        ${backupBadge}
+                        <span class="badge">🧮 Loss factor: ${(lossMultiplier*100-100).toFixed(0)}%</span>
+                        <span class="badge">🌙 Night consumption: ${nighttimeLoadKwh.toFixed(1)} kWh/night</span>
+                    </div>
+                    <div style="font-size:0.9rem; line-height:1.4;">
+                        Monthly: <strong>${monthlyKwh.toFixed(0)} kWh</strong> ${modeText} | Bill: ${formatPHP(monthlyBill)}<br>
+                        ${systemMsg}<br>
+                        <span style="display:inline-block; background:#e2eede; border-radius:20px; padding:4px 12px; margin-top:8px;">
+                        💰 Estimated annual solar yield covers ~${coveragePercent}% of consumption
+                        </span>
+                    </div>
+                </div>
+                ${systemType === 'gridtie' ? '<div class="warning-note">📌 NOTE: Grid-Tie system selected, For battery backup capability, please select Hybrid or Off-Grid system type.</div>' : ''}
+                <div style="font-size:0.7rem; text-align:center; margin-top:8px;"></div>
+            `;
+            
+            resultDynamicDiv.innerHTML = finalHtml;
+        }
+        
+        // Event handlers: Only update hints on system change but NO auto-render
+        function init() {
+            // Show placeholder initially (no results until generate clicked)
+            resultDynamicDiv.innerHTML = `
+                <div class="placeholder-message">
+                    ⚙️ Adjust your parameters above and click <strong>"GENERATE"</strong> to see solar & battery sizing, carbon savings, and night-aware results.
+                </div>
+            `;
+            updateSystemTypeHints();
+            
+            // Button click: only then compute & display
+            calcBtn.addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                renderRecommendation(); 
+            });
+            
+            // System type radio changes only update hints, not auto-render
+            const radios = document.getElementsByName('systemType');
+            for(let r of radios) {
+                r.addEventListener('change', () => {
+                    updateSystemTypeHints();
+                });
+            }
+            
+            // No auto-render on sliders, inputs, etc. They just update displays but do NOT trigger results.
+            // The generate button is the sole trigger.
+            // Also ensure that interactive updates do not auto-generate.
+            // For better UX, we keep the slider numeric displays updated but no re-render.
+            // backupHours and dayPercent already have display updaters, they don't call renderRecommendation.
+            // Additionally, if needed, any change will NOT affect result panel until generate.
+        }
+        init();
+    })();
+</script>
+</body>
+</html>
