@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>RenewX | Solar + Roof Area Estimator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #d4e9d0 0%, #b0cfaa 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem 1.8rem;
+            min-height: 100vh;
+        }
+
+        /* main container: two-column layout (left inputs, right results) */
+        .renewx-layout {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8rem;
+        }
+
+        /* LEFT PANEL — all inputs */
+        .inputs-panel {
+            flex: 1.1;
+            min-width: 340px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            padding: 1.8rem;
+            box-shadow: 0 25px 40px -12px rgba(0, 32, 0, 0.3);
+            border: 1px solid rgba(100, 140, 80, 0.25);
+            transition: all 0.2s;
+            height: fit-content;
+        }
+
+        /* LEFT PANEL HEADER (inside left layout) */
+        .left-panel-header {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #cfe2c8;
+        }
+        .left-panel-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1b4d33, #2c7a4b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .left-panel-header .pv-badge {
+            background: #e7f3e1;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #1f5e3e;
+            margin-top: 6px;
+        }
+
+        /* RIGHT PANEL — results */
+        .results-panel {
+            flex: 1.5;
+            min-width: 420px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            padding: 2.8rem;
+            box-shadow: 0 25px 40px -12px rgba(0, 32, 0, 0.25);
+            border: 1px solid rgba(100, 140, 80, 0.25);
+            transition: all 0.2s;
+        }
+
+        /* global header (simplified, only tagline remains) */
+        .global-header {
+            max-width: 1500px;
+            margin: 0 auto 1.5rem auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .tagline {
+            background: #ecf9e6cc;
+            padding: 0.4rem 1.3rem;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #1f4d37;
+        }
+
+        /* input styling */
+        .input-group {
+            margin-bottom: 1.6rem;
+        }
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: #1a472e;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            margin-bottom: 8px;
+        }
+        .modern-input, .modern-select {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 44px;
+            border: 1.5px solid #cfe2c8;
+            background: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: 0.2s;
+            outline: none;
+        }
+        .modern-input:focus, .modern-select:focus {
+            border-color: #2c7a4b;
+            box-shadow: 0 0 0 3px rgba(44, 122, 75, 0.2);
+        }
+        .dual-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .dual-row .input-group {
+            flex: 1;
+        }
+        .slider-wrapper {
+            background: #f2f9ee;
+            border-radius: 60px;
+            padding: 0.4rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .slider-wrapper input {
+            flex: 3;
+            min-width: 130px;
+        }
+        .slider-value {
+            background: #e0efd8;
+            padding: 5px 18px;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #1f6e43;
+            font-size: 0.85rem;
+        }
+        .radio-group-modern {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+        .radio-card {
+            background: #f4faf0;
+            border-radius: 60px;
+            padding: 6px 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: 1px solid #cde0c5;
+            transition: all 0.15s;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .radio-card.active-radio {
+            background: #2c7a4b;
+            border-color: #2c7a4b;
+            color: white;
+        }
+        .radio-card input {
+            accent-color: #1b5e3a;
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+        .help-micro {
+            font-size: 0.7rem;
+            color: #517a5e;
+            margin-top: 6px;
+            margin-left: 12px;
+        }
+        .generate-btn {
+            background: linear-gradient(105deg, #1b3b2b 0%, #2a6e46 100%);
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            border-radius: 60px;
+            color: white;
+            margin: 20px 0 8px 0;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .generate-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* right side result styling (improved cards) */
+        .kpi-dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi-tile {
+            background: #f4faf0;
+            flex: 5;
+            min-width: 120px;
+            border-radius: 1.6rem;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            border-bottom: 3px solid #6faa5c;
+        }
+        .kpi-number {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #1a5e3a;
+            line-height: 1.2;
+        }
+        .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #4a6b55;
+            letter-spacing: 0.5px;
+        }
+        .eco-card {
+            background: linear-gradient(115deg, #e2f0db, #cee6c4);
+            border-radius: 1.5rem;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        .insight-row {
+            background: white;
+            border-radius: 1.2rem;
+            padding: 0.7rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin: 1rem 0;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #cde0c5;
+        }
+        .sys-message {
+            background: #eef3ea;
+            border-radius: 1.2rem;
+            padding: 0.8rem 1.2rem;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+            border-left: 5px solid #3e9f62;
+        }
+        .badge-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 0.8rem 0;
+        }
+        .badge-mini {
+            background: #e9f2e3;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .warning-soft {
+            background: #fff1e0;
+            border-radius: 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: #ad7a2c;
+        }
+        .placeholder-modern {
+            background: #fefce8;
+            text-align: center;
+            padding: 2rem 1rem;
+            border-radius: 1.8rem;
+        }
+        hr {
+            margin: 0.8rem 0;
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, #cde0c5, transparent);
+        }
+        .roof-card {
+            background: #eaf5e4;
+            border-radius: 1.2rem;
+            padding: 0.8rem 1rem;
+            margin-top: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border: 1px solid #bdd8b2;
+        }
+        .roof-badge {
+            background: #2c7a4b20;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #1c5438;
+            font-size: 0.75rem;
+        }
+        @media (max-width: 880px) {
+            body { padding: 1rem; }
+            .renewx-layout { flex-direction: column; }
+            .inputs-panel, .results-panel { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="global-header">
+    <div class="tagline"></div>
+</div>
+
+<div class="renewx-layout">
+    <!-- LEFT SIDE: ALL INPUT CONTROLS with RenewX title inside -->
+    <div class="inputs-panel">
+        <div class="left-panel-header">
+            <h1>RenewX</h1>
+            <div class="pv-badge">PV Energy Calculator</div>
+        </div>
+
+        <!-- Bill / kWh + Mode -->
+        <div class="dual-row">
+            <div class="input-group" style="flex:2">
+                <div class="input-label"><span></span> Monthly Bill / kWh</div>
+                <input type="number" id="energyInput" class="modern-input" placeholder="e.g., 5200" value="4800" step="any">
+                <div class="help-micro"></div>
+            </div>
+            <div class="input-group" style="flex:1">
+                <div class="input-label">Mode</div>
+                <select id="inputMode" class="modern-select">
+                    <option value="bill">Bill (₱)</option>
+                    <option value="kwh">kWh usage</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Electricity Rate (manual) -->
+        <div class="input-group">
+            <div class="input-label"><span></span> Electricity Rate (₱/kWh)</div>
+            <input type="number" id="ratePerKwh" class="modern-input" value="12.00" step="0.5" min="1" max="30">
+            <div class="help-micro"></div>
+        </div>
+
+        <!-- Daytime usage slider -->
+        <div class="input-group">
+            <div class="input-label"><span></span> Daytime Usage %</div>
+            <div class="slider-wrapper">
+                <input type="range" id="dayPercentSlider" min="0" max="100" step="5" value="55">
+                <span class="slider-value" id="dayPercentDisplay">55% Day / 45% Night</span>
+            </div>
+            <div class="help-micro"></div>
+        </div>
+
+        <!-- System Architecture (radio cards) -->
+        <div class="input-group">
+            <div class="input-label"><span></span> System Architecture</div>
+            <div class="radio-group-modern" id="systemRadios">
+                <label class="radio-card" data-sys="gridtie">
+                    <input type="radio" name="systemType" value="gridtie" checked>  Grid-Tie
+                </label>
+                <label class="radio-card" data-sys="hybrid">
+                    <input type="radio" name="systemType" value="hybrid">  Hybrid
+                </label>
+                <label class="radio-card" data-sys="offgrid">
+                    <input type="radio" name="systemType" value="offgrid">  Off-Grid
+                </label>
+            </div>
+            <div class="help-micro" id="systemTypeHelp"></div>
+        </div>
+
+        <!-- Backup hours slider -->
+        <div class="input-group">
+            <div class="input-label"><span></span> Desired Backup Hours (autonomy)</div>
+            <div class="slider-wrapper">
+                <input type="range" id="backupHours" min="0" max="24" step="0.5" value="8">
+                <span class="slider-value" id="backupHoursDisplay">8.0 hours</span>
+            </div>
+            <div class="help-micro" id="backupHelpText"></div>
+        </div>
+
+        <!-- sun hours & loss factor -->
+        <div class="dual-row">
+            <div class="input-group">
+                <div class="input-label"><span></span> Peak Sun Hours</div>
+                <input type="number" id="sunHours" class="modern-input" value="4.5" step="0.1">
+                <div class="help-micro"></div>
+            </div>
+            <div class="input-group">
+                <div class="input-label"><span></span> System Losses</div>
+                <select id="lossFactorSelect" class="modern-select">
+                    <option value="1.18">Standard (18% loss)</option>
+                    <option value="1.25" selected>Conservative (25% loss)</option>
+                    <option value="1.12">Premium (12% loss)</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="generate-btn" id="calcBtn">GENERATE RECOMMENDATION</button>
+        <div class="help-micro" style="text-align:center;"></div>
+    </div>
+
+    <!-- RIGHT SIDE: RESULTS (dynamic - only appears after click) -->
+    <div class="results-panel" id="resultPanelRight">
+        <div id="resultDynamic">
+            <div class="placeholder-modern">
+                Configure your energy data on the left panel,<br>
+                then click <strong>“GENERATE RECOMMENDATION”</strong><br>
+                Get PV size, battery capacity, CO₂ savings + roof area estimate.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM elements (all inputs left side)
+        const energyInput = document.getElementById('energyInput');
+        const inputModeSelect = document.getElementById('inputMode');
+        const ratePerKwhInput = document.getElementById('ratePerKwh');
+        const sunHoursInput = document.getElementById('sunHours');
+        const backupHoursSlider = document.getElementById('backupHours');
+        const backupHoursDisplay = document.getElementById('backupHoursDisplay');
+        const dayPercentSlider = document.getElementById('dayPercentSlider');
+        const dayPercentDisplay = document.getElementById('dayPercentDisplay');
+        const lossFactorSelect = document.getElementById('lossFactorSelect');
+        const calcBtn = document.getElementById('calcBtn');
+        const resultDynamicDiv = document.getElementById('resultDynamic');
+        const systemTypeHelp = document.getElementById('systemTypeHelp');
+        const backupHelpText = document.getElementById('backupHelpText');
+
+        // helper: radio active style
+        function updateRadioActiveStyle() {
+            const selectedVal = getSelectedSystemType();
+            document.querySelectorAll('.radio-card').forEach(card => {
+                const radio = card.querySelector('input');
+                if(radio && radio.value === selectedVal) card.classList.add('active-radio');
+                else card.classList.remove('active-radio');
+            });
+        }
+
+        function getSelectedSystemType() {
+            const radios = document.getElementsByName('systemType');
+            for(let r of radios) if(r.checked) return r.value;
+            return 'gridtie';
+        }
+
+        function updateSystemTypeHints() {
+            const sysType = getSelectedSystemType();
+            if(sysType === 'gridtie') {
+                backupHelpText.innerHTML = '';
+                backupHoursSlider.style.opacity = '0.7';
+            } else {
+                backupHelpText.innerHTML = '';
+                backupHoursSlider.style.opacity = '1';
+            }
+            updateRadioActiveStyle();
+        }
+
+        // slider displays
+        backupHoursSlider.addEventListener('input', function() {
+            backupHoursDisplay.textContent = parseFloat(this.value).toFixed(1) + ' hours';
+        });
+        dayPercentSlider.addEventListener('input', function() {
+            const val = parseInt(this.value);
+            dayPercentDisplay.textContent = `${val}% Day / ${100-val}% Night`;
+        });
+
+        function getElectricityRate() { let r = parseFloat(ratePerKwhInput.value); return (isNaN(r) || r<=0) ? 12.0 : r; }
+        function getDesiredBackupHours() { return parseFloat(backupHoursSlider.value); }
+        function getDayPercent() { return parseInt(dayPercentSlider.value); }
+        function getLossMultiplier() { return parseFloat(lossFactorSelect.value); }
+        function getSunHours() { let sh = parseFloat(sunHoursInput.value); return (isNaN(sh) || sh<2) ? 4.5 : Math.min(sh, 6.8); }
+
+        function getMonthlyKwhFromInput() {
+            let raw = parseFloat(energyInput.value);
+            if(isNaN(raw) || raw <= 0) return 0;
+            if(inputModeSelect.value === 'kwh') return raw;
+            const rate = getElectricityRate();
+            let monthlyKwh = raw / rate;
+            return monthlyKwh > 0 ? monthlyKwh : 0;
+        }
+
+        // refined core engine (robust sizing)
+        function computeRecommendation(monthlyKwh, systemType, sunHours, desiredBackupHours, lossMultiplier, dayPercent) {
+            if(monthlyKwh <= 0) monthlyKwh = 0.1;
+            const dailyKwhTotal = monthlyKwh / 30.4;
+            const dayRatio = dayPercent / 100;
+            const nightRatio = 1 - dayRatio;
+            const daytimeLoadKwh = dailyKwhTotal * dayRatio;
+            const nighttimeLoadKwh = dailyKwhTotal * nightRatio;
+            const avgNightKw = nighttimeLoadKwh / 12;
+
+            let requiredPvKw = (dailyKwhTotal * lossMultiplier) / sunHours;
+            let solarKw = Math.max(0.6, Math.ceil(requiredPvKw * 2) / 2);
+            solarKw = Math.min(solarKw, 70);
+            const dodFactor = 0.8;
+            const inverterEff = 0.94;
+            let batteryKwh = 0;
+
+            if(systemType === 'gridtie') {
+                batteryKwh = 0;
+            }
+            else if (systemType === 'hybrid') {
+                let nightEnergyNeeded = nighttimeLoadKwh;
+                let backupExtra = 0;
+                if(desiredBackupHours > 0) {
+                    const avgLoadKw = dailyKwhTotal / 24;
+                    backupExtra = avgLoadKw * desiredBackupHours;
+                }
+                let totalBatteryEnergy = (nightEnergyNeeded + backupExtra) / inverterEff;
+                let rawBattery = totalBatteryEnergy / dodFactor;
+                batteryKwh = Math.ceil(rawBattery * 2) / 2;
+                if(batteryKwh < 2.0 && (nightEnergyNeeded > 0 || desiredBackupHours > 0)) batteryKwh = 2.0;
+                if(desiredBackupHours === 0 && nightEnergyNeeded === 0) batteryKwh = 1.5;
+                batteryKwh = Math.min(batteryKwh, 140);
+            } 
+            else if (systemType === 'offgrid') {
+                let autonomySafety = 1.35;
+                let nightCover = nighttimeLoadKwh;
+                let extraBackup = (dailyKwhTotal / 24) * desiredBackupHours;
+                let totalRequired = (nightCover + extraBackup) * autonomySafety;
+                let usableReq = totalRequired / inverterEff;
+                let rawBattery = usableReq / dodFactor;
+                batteryKwh = Math.ceil(rawBattery * 2) / 2;
+                if(batteryKwh < 5) batteryKwh = 5;
+                batteryKwh = Math.min(batteryKwh, 180);
+                let offgridSolar = (dailyKwhTotal * 1.45) / sunHours;
+                solarKw = Math.max(solarKw, Math.ceil(offgridSolar * 2) / 2);
+                solarKw = Math.min(solarKw, 75);
+            }
+            solarKw = Math.round(solarKw * 10) / 10;
+            batteryKwh = Math.round(batteryKwh * 10) / 10;
+            if(batteryKwh < 0) batteryKwh = 0;
+
+            const annualGen = solarKw * sunHours * 365 * 0.85;
+            const annualConsumption = monthlyKwh * 12;
+            let coveragePercent = annualConsumption > 0 ? Math.min(98, Math.round((annualGen / annualConsumption) * 100)) : 0;
+            if(coveragePercent > 100) coveragePercent = 100;
+            const co2OffsetKg = Math.round(annualGen * 0.82);
+            const treesEquivalent = Math.round(co2OffsetKg / 22);
+            
+            // ROOF AREA ESTIMATE: based on solar array kWp and standard panel efficiency (~200W per m² typical range)
+            // Using modern panels: 1 kWp needs approx 5-6 m²; we adopt 5.5 m²/kWp as realistic factor (including spacing).
+            const roofAreaM2 = +(solarKw * 5.5).toFixed(1);
+            const approxPanels = Math.ceil(solarKw * 1000 / 450); // assuming 450W panels for visual estimate
+            
+            return { solarKw, batteryKwh, dailyKwhTotal, avgNightKw, nighttimeLoadKwh, dayPercent, coveragePercent, monthlyKwh, sunHours, desiredBackupHours, systemType, co2OffsetKg, treesEquivalent, annualGen, daytimeLoadKwh, roofAreaM2, approxPanels };
+        }
+
+        function formatPHP(amount) { return '₱' + amount.toLocaleString(undefined, {minimumFractionDigits:2}); }
+
+        function renderRecommendation() {
+            let monthlyKwh = getMonthlyKwhFromInput();
+            if(monthlyKwh <= 0) {
+                resultDynamicDiv.innerHTML = `<div class="placeholder-modern" style="background:#fff0e5;">⚠️ Please enter a valid monthly bill or kWh > 0</div>`;
+                return;
+            }
+            const systemType = getSelectedSystemType();
+            const sunHours = getSunHours();
+            const desiredBackupHours = getDesiredBackupHours();
+            const lossMultiplier = getLossMultiplier();
+            const dayPercent = getDayPercent();
+            const ratePerKwh = getElectricityRate();
+            const result = computeRecommendation(monthlyKwh, systemType, sunHours, desiredBackupHours, lossMultiplier, dayPercent);
+            const { solarKw, batteryKwh, dailyKwhTotal, nighttimeLoadKwh, avgNightKw, coveragePercent, co2OffsetKg, treesEquivalent, annualGen, daytimeLoadKwh, roofAreaM2, approxPanels } = result;
+            
+            const monthlyBill = monthlyKwh * ratePerKwh;
+            let modeDesc = (inputModeSelect.value === 'bill') ? `Bill ${formatPHP(parseFloat(energyInput.value))} → ${monthlyKwh.toFixed(0)} kWh` : `${monthlyKwh.toFixed(0)} kWh @ ₱${ratePerKwh.toFixed(2)}/kWh`;
+
+            const sysIcon = { gridtie:' Grid-Tie', hybrid:' Hybrid + Storage', offgrid:' Off-Grid' }[systemType];
+
+            // battery tile condition
+            let batteryHtml = '';
+            if(systemType === 'gridtie') {
+                batteryHtml = `<div class="kpi-tile"><div class="kpi-number">0 kWh</div><div class="kpi-label">BATTERY</div><div style="font-size:11px;">Grid‑tie only</div></div>`;
+            } else {
+                batteryHtml = `<div class="kpi-tile"><div class="kpi-number">${batteryKwh} kWh</div><div class="kpi-label">BATTERY BANK</div><div style="font-size:11px;">${desiredBackupHours > 0 ? desiredBackupHours+'h backup' : 'night shifting'}</div></div>`;
+            }
+
+            const kpiSection = `
+                <div class="kpi-dashboard">
+                    <div class="kpi-tile"><div class="kpi-number">${solarKw} kWp</div><div class="kpi-label">SOLAR ARRAY</div><div>~${Math.round(annualGen)} kWh/yr</div></div>
+                    ${batteryHtml}
+                    <div class="kpi-tile"><div class="kpi-number">${coveragePercent}%</div><div class="kpi-label">OFFSET</div><div>annual coverage</div></div>
+                    <div class="kpi-tile"><div class="kpi-number">${treesEquivalent}</div><div class="kpi-label">🌳 TREES/YR</div><div>CO₂ absorbed</div></div>
+                </div>
+            `;
+
+            const ecoBlock = `
+                <div class="eco-card">
+                    <div><span style="font-size:1.5rem;"></span> <strong>${co2OffsetKg.toLocaleString()} kg CO₂ saved/year</strong><br></div>
+                    <div class="badge-mini">1 tree ↔ 22kg CO₂</div>
+                </div>
+            `;
+
+            const insightBlock = `
+                <div class="insight-row">
+                    <span> Daily: ${dailyKwhTotal.toFixed(1)} kWh</span>
+                    <span> Day: ${dayPercent}% (${daytimeLoadKwh.toFixed(1)} kWh)</span>
+                    <span> Night: ${100-dayPercent}% (${nighttimeLoadKwh.toFixed(1)} kWh)</span>
+                    <span> Night avg: ${avgNightKw.toFixed(2)} kW</span>
+                    <span> Sun: ${sunHours} h/day</span>
+                </div>
+            `;
+
+            // ROOF ESTIMATE CARD (new feature added)
+            let roofEstimateHtml = `
+                <div class="roof-card">
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <span style="font-size:1.2rem;"></span>
+                        <div><strong> Roof Area Estimate</strong><br><span style="font-size:0.9rem;">${roofAreaM2} m² needed</span><br><span style="font-size:0.7rem;"></span></div>
+                    </div>
+                    <div class="roof-badge">Standard spacing: 5.5 m²/kWp</div>
+                </div>
+            `;
+
+            let sysMsg = '';
+            if(systemType === 'gridtie') sysMsg = `Grid‑Tie configuration: no battery needed, Solar covers ~${coveragePercent}% of usage.`;
+            else if(systemType === 'hybrid') sysMsg = `Hybrid system: ${batteryKwh} kWh battery covers night load (${nighttimeLoadKwh.toFixed(1)} kWh) + ${desiredBackupHours}h backup. Seamless outage protection. Requires ${roofAreaM2} m² roof area.`;
+            else sysMsg = `Off‑Grid independence: ${batteryKwh} kWh battery handles ${nighttimeLoadKwh.toFixed(1)} kWh nightly + ${desiredBackupHours}h reserve. Complete autonomy. Roof needed: ${roofAreaM2} m² for PV array.`;
+
+            const badges = `
+                <div class="badge-strip">
+                    <span class="badge-mini"> Rate: ₱${ratePerKwh.toFixed(2)}/kWh</span>
+                    <span class="badge-mini"> Loss: ${(lossMultiplier*100-100).toFixed(0)}%</span>
+                    <span class="badge-mini">${desiredBackupHours > 0 ? ` Backup: ${desiredBackupHours}h` : ' No backup'}</span>
+                    <span class="badge-mini"> Roof: ${roofAreaM2} m²</span>
+                </div>
+            `;
+
+            const warningNote = (systemType === 'gridtie') ? `<div class="warning-soft"></div>` : '';
+
+            const finalHtml = `
+                ${kpiSection}
+                ${ecoBlock}
+                ${insightBlock}
+                ${roofEstimateHtml}
+                <div class="sys-message">
+                    <strong>${sysIcon} configuration</strong><br>${sysMsg}
+                </div>
+                ${badges}
+                <hr>
+                <div style="font-size:0.75rem; display:flex; justify-content:space-between; flex-wrap:wrap;">
+                    <span> Monthly: ${monthlyKwh.toFixed(0)} kWh (${modeDesc})</span>
+                    <span> Solar gen: ~${Math.round(annualGen)} kWh/year</span>
+                    <span> Roof area: ${roofAreaM2} m²</span>
+                </div>
+                ${warningNote}
+                <div style="font-size:0.65rem; text-align:center; margin-top:12px;"></div>
+            `;
+            resultDynamicDiv.innerHTML = finalHtml;
+        }
+
+        // bind radio events and style
+        function bindRadioEvents() {
+            const radios = document.querySelectorAll('input[name="systemType"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    updateSystemTypeHints();
+                });
+            });
+            document.querySelectorAll('.radio-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const inp = card.querySelector('input');
+                    if(inp && !inp.checked) {
+                        inp.checked = true;
+                        const changeEv = new Event('change', { bubbles: true });
+                        inp.dispatchEvent(changeEv);
+                    }
+                });
+            });
+        }
+
+        function init() {
+            bindRadioEvents();
+            updateSystemTypeHints();
+            backupHoursDisplay.textContent = parseFloat(backupHoursSlider.value).toFixed(1) + ' hours';
+            dayPercentDisplay.textContent = `${dayPercentSlider.value}% Day / ${100-dayPercentSlider.value}% Night`;
+            
+            // Placeholder with roof note (shows initial info)
+            resultDynamicDiv.innerHTML = `
+                <div class="placeholder-modern">
+                    
+                </div>
+            `;
+            
+            calcBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                renderRecommendation();
+            });
+        }
+        init();
+    })();
+</script>
+</body>
+</html>
