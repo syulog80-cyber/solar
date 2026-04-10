@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=0.75, user-scalable=yes">
     <title>RenewX</title>
     <style>
         * {
@@ -17,9 +17,24 @@
             justify-content: center;
             align-items: center;
             padding: 24px 16px;
+            /* scaling context: body remains natural, but we want the CARD to be 75% of its original width?
+               To achieve "frame by 75%", we scale the entire .glass-card container using transform: scale(0.75)
+               and adjust margin/padding to keep centered & readable. 
+               Alternatively, use a wrapper with transform-origin. We'll wrap card in a scaled container.
+               This ensures everything (text, inputs, buttons) visually shrinks to 75% while layout remains intact.
+               The user sees a compact but fully functional panel.
+            */
         }
+        /* scaling wrapper: scales the main card to 75% of its normal size */
+        .scale-frame {
+            transform: scale(0.75);
+            transform-origin: center center;
+            width: 100%;
+            max-width: 1100px;  /* original max-width */
+            margin: 0 auto;
+        }
+        /* fallback for very small screens: reduce padding etc, but scaling works nicely */
         .glass-card {
-            max-width: 1100px;
             width: 100%;
             background: rgba(255, 255, 255, 0.97);
             backdrop-filter: blur(2px);
@@ -295,93 +310,99 @@
             .content { padding: 24px 18px; }
             .rec-value { font-size: 1.6rem; }
         }
+
+        /* additional small fix: scaling might cause overflow on very narrow screens? 
+           But body padding gives breathing room. All good. */
     </style>
 </head>
 <body>
-<div class="glass-card">
-    <div class="hero">
-        <h1>
-            RenewX
-        </h1>
-        <p>PV Energy Estimation</p>
-    </div>
-    <div class="content">
-        <!-- Bill or kWh input -->
-        <div class="input-group">
-            <div class="input-field" style="flex:1.2">
-                <label>⚡ MONTHLY BILL (₱)  OR  📊 MONTHLY kWh</label>
-                <input type="number" id="energyInput" placeholder="e.g., 4800 or 850" step="any" value="4800">
-                <div class="help-text">Enter electricity bill OR actual monthly consumption</div>
-            </div>
-            <div class="input-field">
-                <label>🔘 INPUT MODE</label>
-                <select id="inputMode">
-                    <option value="bill">💰 Bill amount (₱)</option>
-                    <option value="kwh">🔋 Monthly Consumption (kWh)</option>
-                </select>
-            </div>
+<div class="scale-frame">
+    <div class="glass-card">
+        <div class="hero">
+            <h1>
+                RenewX
+                
+            </h1>
+            <p>PV Energy Estimation</p>
         </div>
-
-        <!-- DAY & NIGHT USAGE SLIDER -->
-        <div class="input-field">
-            <label>🌞 DAYTIME USAGE % (rest is night consumption)</label>
-            <div class="slider-container">
-                <input type="range" id="dayPercentSlider" min="0" max="100" step="5" value="55">
-                <span class="slider-value" id="dayPercentDisplay">55% Day / 45% Night</span>
-            </div>
-            <div class="help-text">How much of your total consumption happens during sunlight hours? Affects battery sizing for nighttime backup.</div>
-        </div>
-
-        <!-- System Architecture -->
-        <div class="input-field">
-            <label>🔌 SYSTEM ARCHITECTURE</label>
-            <div class="radio-switch" id="systemTypeGroup">
-                <label><input type="radio" name="systemType" value="gridtie" checked> ⚡ Grid-Tie</label>
-                <label><input type="radio" name="systemType" value="hybrid"> 🔄 Hybrid</label>
-                <label><input type="radio" name="systemType" value="offgrid"> 🌲 Off-Grid</label>
-            </div>
-            <div class="help-text" id="systemTypeHelp">Grid-tie: no battery needed (battery automatically set to 0 kWh). Hybrid/Off-grid enables battery storage.</div>
-        </div>
-
-        <!-- Backup Hours Slider -->
-        <div class="input-field">
-            <label>⏱️ DESIRED BACKUP HOURS (battery autonomy)</label>
-            <div class="slider-container">
-                <input type="range" id="backupHours" min="0" max="24" step="0.5" value="8">
-                <span class="slider-value" id="backupHoursDisplay">8.0 hours</span>
-            </div>
-            <div class="help-text" id="backupHelpText">Hours of backup power during outages. For Grid-Tie, battery is 0 kWh regardless of backup setting.</div>
-        </div>
-
-        <!-- Peak Sun Hours -->
-        <div class="input-field">
-            <label>🌞 PEAK SUN HOURS (daily avg)</label>
-            <input type="number" id="sunHours" value="4.5" step="0.1" min="2.5" max="6.5">
-        </div>
-
-        <!-- System Loss Factor -->
-        <div class="input-field">
-            <label>⚙️ SYSTEM LOSS FACTOR</label>
-            <select id="lossFactorSelect">
-                <option value="1.18">Standard (18% losses)</option>
-                <option value="1.25" selected>Conservative (25% losses)</option>
-                <option value="1.12">Premium (12% losses)</option>
-            </select>
-        </div>
-
-        <button class="recommend-btn" id="calcBtn">✨ GENERATE</button>
-
-        <div id="resultContainer" class="result-panel">
-            <div class="result-header">
-                <h3>📋 System Recommendation</h3>
-            </div>
-            <div id="recommendationDynamic">
-                <div class="placeholder-message">
-                    ⚙️ Adjust your parameters above and click <strong>"GENERATE"</strong> to see solar & battery sizing, carbon savings, and night-aware results.
+        <div class="content">
+            <!-- Bill or kWh input -->
+            <div class="input-group">
+                <div class="input-field" style="flex:1.2">
+                    <label>⚡ MONTHLY BILL (₱)  OR  📊 MONTHLY kWh</label>
+                    <input type="number" id="energyInput" placeholder="e.g., 4800 or 850" step="any" value="4800">
+                    <div class="help-text">Enter electricity bill OR actual monthly consumption</div>
+                </div>
+                <div class="input-field">
+                    <label>🔘 INPUT MODE</label>
+                    <select id="inputMode">
+                        <option value="bill">💰 Bill amount (₱)</option>
+                        <option value="kwh">🔋 Monthly Consumption (kWh)</option>
+                    </select>
                 </div>
             </div>
-            <div class="footnote">
-                
+
+            <!-- DAY & NIGHT USAGE SLIDER -->
+            <div class="input-field">
+                <label>🌞 DAYTIME USAGE % (rest is night consumption)</label>
+                <div class="slider-container">
+                    <input type="range" id="dayPercentSlider" min="0" max="100" step="5" value="55">
+                    <span class="slider-value" id="dayPercentDisplay">55% Day / 45% Night</span>
+                </div>
+                <div class="help-text">How much of your total consumption happens during sunlight hours? Affects battery sizing for nighttime backup.</div>
+            </div>
+
+            <!-- System Architecture -->
+            <div class="input-field">
+                <label>🔌 SYSTEM ARCHITECTURE</label>
+                <div class="radio-switch" id="systemTypeGroup">
+                    <label><input type="radio" name="systemType" value="gridtie" checked> ⚡ Grid-Tie</label>
+                    <label><input type="radio" name="systemType" value="hybrid"> 🔄 Hybrid</label>
+                    <label><input type="radio" name="systemType" value="offgrid"> 🌲 Off-Grid</label>
+                </div>
+                <div class="help-text" id="systemTypeHelp">Grid-tie: no battery needed (battery automatically set to 0 kWh). Hybrid/Off-grid enables battery storage.</div>
+            </div>
+
+            <!-- Backup Hours Slider -->
+            <div class="input-field">
+                <label>⏱️ DESIRED BACKUP HOURS (battery autonomy)</label>
+                <div class="slider-container">
+                    <input type="range" id="backupHours" min="0" max="24" step="0.5" value="8">
+                    <span class="slider-value" id="backupHoursDisplay">8.0 hours</span>
+                </div>
+                <div class="help-text" id="backupHelpText">Hours of backup power during outages. For Grid-Tie, battery is 0 kWh regardless of backup setting.</div>
+            </div>
+
+            <!-- Peak Sun Hours -->
+            <div class="input-field">
+                <label>🌞 PEAK SUN HOURS (daily avg)</label>
+                <input type="number" id="sunHours" value="4.5" step="0.1" min="2.5" max="6.5">
+            </div>
+
+            <!-- System Loss Factor -->
+            <div class="input-field">
+                <label>⚙️ SYSTEM LOSS FACTOR</label>
+                <select id="lossFactorSelect">
+                    <option value="1.18">Standard (18% losses)</option>
+                    <option value="1.25" selected>Conservative (25% losses)</option>
+                    <option value="1.12">Premium (12% losses)</option>
+                </select>
+            </div>
+
+            <button class="recommend-btn" id="calcBtn">✨ GENERATE</button>
+
+            <div id="resultContainer" class="result-panel">
+                <div class="result-header">
+                    <h3>📋 System Recommendation</h3>
+                </div>
+                <div id="recommendationDynamic">
+                    <div class="placeholder-message">
+                        ⚙️ Adjust your parameters above and click <strong>"GENERATE"</strong> to see solar & battery sizing, carbon savings, and night-aware results.
+                    </div>
+                </div>
+                <div class="footnote">
+                    Estimates based on average irradiance & component efficiency | RenewX
+                </div>
             </div>
         </div>
     </div>
@@ -677,13 +698,6 @@
                     updateSystemTypeHints();
                 });
             }
-            
-            // No auto-render on sliders, inputs, etc. They just update displays but do NOT trigger results.
-            // The generate button is the sole trigger.
-            // Also ensure that interactive updates do not auto-generate.
-            // For better UX, we keep the slider numeric displays updated but no re-render.
-            // backupHours and dayPercent already have display updaters, they don't call renderRecommendation.
-            // Additionally, if needed, any change will NOT affect result panel until generate.
         }
         init();
     })();
